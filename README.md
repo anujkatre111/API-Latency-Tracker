@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# API Latency Tracker
+
+A developer-focused web application to monitor, visualize, and analyze HTTP API endpoint performance (latency) over time.
+
+## Tech Stack
+
+- **Framework:** Next.js 14+ (App Router)
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Database:** PostgreSQL via Prisma ORM
+- **Auth:** NextAuth.js (credentials)
+- **Charts:** Recharts
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database
+
+### Setup
+
+**Zero-config (SQLite):** The project uses SQLite by default. Requires **Node.js 20 or 22** (Node 24 has compatibility issues).
 
 ```bash
+cd api-latency-tracker
+nvm use 22    # or: nvm use 20 (if using nvm)
+npm install
+npx prisma db push
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The `npm run dev` script automatically uses Node 22 via nvm when available.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) and register an account.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**PostgreSQL (production):** For production, use PostgreSQL. Set `DATABASE_URL` in `.env` and update `prisma/schema.prisma` datasource to `provider = "postgresql"`.
 
-## Learn More
+**Deploy to Vercel:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for step-by-step instructions.
 
-To learn more about Next.js, take a look at the following resources:
+### Health Check Scheduling
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Development:** A built-in cron runner checks endpoints every 30 seconds (scans for due checks).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Production:** Call the cron API from an external scheduler (e.g. Vercel Cron, GitHub Actions):
 
-## Deploy on Vercel
+```bash
+curl -X POST https://your-app.vercel.app/api/cron/run-checks \
+  -H "x-cron-secret: YOUR_CRON_SECRET"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Add `CRON_SECRET` to your environment variables.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features (Phase 1 - MVP)
+
+- ✅ Email/password authentication
+- ✅ Endpoint CRUD (add, edit, delete, pause)
+- ✅ Automated health checks with configurable intervals
+- ✅ Dashboard with summary cards and status
+- ✅ Endpoint detail page with latency chart
+- ✅ Manual "Ping Now" trigger
+- ✅ Uptime percentage, p50/p95/p99 stats
+
+## Routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Redirects to login or dashboard |
+| `/login` | Login page |
+| `/register` | Registration page |
+| `/dashboard` | Main dashboard |
+| `/endpoints/new` | Add endpoint form |
+| `/endpoints/[id]` | Endpoint detail & charts |
+| `/endpoints/[id]/edit` | Edit endpoint |
+| `/settings` | User settings |

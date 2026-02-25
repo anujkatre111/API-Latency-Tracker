@@ -1,0 +1,75 @@
+// API Latency Tracker - Prisma Schema
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  endpoints Endpoint[]
+  alerts    Alert[]
+}
+
+model Endpoint {
+  id                 String   @id @default(cuid())
+  userId             String
+  name               String
+  url                String
+  method             String   @default("GET") // GET, POST, HEAD
+  interval           Int      @default(60) // seconds: 30, 60, 300, 600, 1800
+  expectedStatusCode Int      @default(200)
+  headers            String?  // JSON: { "key": "value" }
+  body               String?  // JSON for POST
+  latencyThreshold   Int?     // ms - triggers DEGRADED if exceeded
+  tags               String?  @default("[]") // JSON: ["tag1","tag2"]
+  timeout            Int      @default(10000) // ms
+  isPaused           Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checks Check[]
+
+  @@index([userId])
+  @@index([isPaused])
+}
+
+model Check {
+  id         String   @id @default(cuid())
+  endpointId String
+  timestamp  DateTime @default(now())
+  latencyMs  Int?
+  statusCode Int?
+  error      String?
+  isUp       Boolean
+
+  endpoint Endpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([endpointId])
+  @@index([endpointId, timestamp])
+}
+
+model Alert {
+  id         String   @id @default(cuid())
+  userId     String
+  endpointId String
+  type       String   // DOWN, RECOVERED, DEGRADED
+  sentAt     DateTime @default(now())
+  isRead     Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
