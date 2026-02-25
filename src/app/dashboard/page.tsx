@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getEndpointStatus } from "@/lib/monitor";
 import Link from "next/link";
@@ -94,7 +95,7 @@ async function getDashboardData(userId: string) {
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user?.id) return null;
+  if (!session?.user?.id) redirect("/login");
 
   const data = await getDashboardData(session.user.id);
 

@@ -1,6 +1,10 @@
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { AddEndpointForm } from "@/components/endpoints/add-endpoint-form";
 
-export default function NewEndpointPage() {
+export default async function NewEndpointPage() {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
   return (
     <div className="p-6 max-w-2xl">
       <div className="mb-6">
