@@ -1,22 +1,23 @@
 import { auth } from "@/lib/auth";
 
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
   const isAuthPage =
     req.nextUrl.pathname === "/login" || req.nextUrl.pathname === "/register";
   const isRoot = req.nextUrl.pathname === "/";
 
+  // Always allow login/register to load
   if (isAuthPage) {
-    if (isLoggedIn) return Response.redirect(new URL("/dashboard", req.url));
+    if (req.auth) return Response.redirect(new URL("/dashboard", req.url));
     return;
   }
 
   if (isRoot) {
-    if (isLoggedIn) return Response.redirect(new URL("/dashboard", req.url));
+    if (req.auth) return Response.redirect(new URL("/dashboard", req.url));
     return Response.redirect(new URL("/login", req.url));
   }
 
-  if (!isLoggedIn) {
+  // Protect other routes
+  if (!req.auth) {
     return Response.redirect(new URL("/login", req.url));
   }
 });

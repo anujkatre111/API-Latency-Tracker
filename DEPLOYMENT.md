@@ -74,8 +74,10 @@ git push -u origin main
 |----------|-------|
 | `DATABASE_URL` | Your PostgreSQL connection string |
 | `AUTH_SECRET` | Generate with `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | `https://your-app.vercel.app` (replace with your deployment URL) |
+| `NEXTAUTH_URL` | `https://your-app.vercel.app` — **must match your exact Vercel URL** (no trailing slash) |
 | `CRON_SECRET` | A random secret (e.g. `openssl rand -base64 32`) — secures the cron endpoint |
+
+**Critical for Vercel:** `trustHost: true` is set in the auth config. Ensure `NEXTAUTH_URL` matches your **exact** deployment URL (e.g. `https://api-latency-tracker-xxx.vercel.app`).
 
 5. Click **Deploy**
 
