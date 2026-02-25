@@ -95,7 +95,19 @@ Redeploy if needed.
 
 ## Health Check Cron
 
-Vercel will run `/api/cron/run-checks` **every minute** (configured in `vercel.json`). Vercel automatically sends `Authorization: Bearer <CRON_SECRET>` when invoking cron jobs — make sure `CRON_SECRET` is set in your env vars.
+**Vercel Hobby (free) plan:** Limited to **one cron run per day**. The default schedule is `0 0 * * *` (midnight UTC daily).
+
+**For more frequent checks (free):** Use an external cron service to call your API:
+
+| Service | Free tier | Setup |
+|---------|-----------|-------|
+| [cron-job.org](https://cron-job.org) | 50 jobs | Create job → URL: `https://your-app.vercel.app/api/cron/run-checks` → Add header `Authorization: Bearer YOUR_CRON_SECRET` → Schedule every 1–5 min |
+| [UptimeRobot](https://uptimerobot.com) | 50 monitors | Add HTTP monitor hitting your cron URL every 5 min |
+| [GitHub Actions](https://github.com) | Free | Workflow that runs `curl` on a schedule |
+
+**Vercel Pro plan:** Supports cron expressions like `* * * * *` (every minute).
+
+Make sure `CRON_SECRET` is set in your env vars — the cron endpoint validates this header.
 
 ---
 
