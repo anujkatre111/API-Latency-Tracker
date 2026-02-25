@@ -50,9 +50,19 @@ export async function POST(request: Request) {
       name: user.name,
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const isDbError =
+      message.includes("Prisma") ||
+      message.includes("Can't reach database") ||
+      message.includes("does not exist");
     console.error("Registration error:", error);
     return NextResponse.json(
-      { error: "Something went wrong" },
+      {
+        error: "Something went wrong",
+        ...(isDbError && {
+          hint: "Database connection failed. Check DATABASE_URL in Vercel and run: npx prisma db push",
+        }),
+      },
       { status: 500 }
     );
   }

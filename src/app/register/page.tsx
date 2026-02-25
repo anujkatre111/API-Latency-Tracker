@@ -39,7 +39,8 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Registration failed");
+        const msg = data.hint ? `${data.error}. ${data.hint}` : (data.error || "Registration failed");
+        setError(msg);
         setLoading(false);
         return;
       }
