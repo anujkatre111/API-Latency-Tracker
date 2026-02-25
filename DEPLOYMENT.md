@@ -76,6 +76,8 @@ git push -u origin main
 | `AUTH_SECRET` | Generate with `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | `https://your-app.vercel.app` — **must match your exact Vercel URL** (no trailing slash) |
 | `CRON_SECRET` | A random secret (e.g. `openssl rand -base64 32`) — secures the cron endpoint |
+| `AUTH_GOOGLE_ID` | (Optional) Google OAuth Client ID — enables "Sign in with Google" |
+| `AUTH_GOOGLE_SECRET` | (Optional) Google OAuth Client Secret |
 
 **Critical for Vercel:** `trustHost: true` is set in the auth config. Ensure `NEXTAUTH_URL` matches your **exact** deployment URL (e.g. `https://api-latency-tracker-xxx.vercel.app`).
 
@@ -110,6 +112,22 @@ Redeploy if needed.
 **Vercel Pro plan:** Supports cron expressions like `* * * * *` (every minute).
 
 Make sure `CRON_SECRET` is set in your env vars — the cron endpoint validates this header.
+
+---
+
+## Google OAuth (Optional)
+
+To enable "Sign in with Google":
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Create a project or select existing
+3. **APIs & Services** → **Credentials** → **Create Credentials** → **OAuth client ID**
+4. Application type: **Web application**
+5. Add **Authorized redirect URIs:**
+   - Local: `http://localhost:3001/api/auth/callback/google`
+   - Production: `https://your-app.vercel.app/api/auth/callback/google`
+6. Copy the **Client ID** and **Client Secret**
+7. Add to Vercel env vars: `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`
 
 ---
 

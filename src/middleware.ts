@@ -13,7 +13,7 @@ export default auth((req) => {
 
   if (isRoot) {
     if (req.auth) return Response.redirect(new URL("/dashboard", req.url));
-    return Response.redirect(new URL("/login", req.url));
+    return; // Allow landing page to load
   }
 
   // Protect other routes

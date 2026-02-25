@@ -124,3 +124,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Grid background: darker in center, fading toward corners */
+.grid-bg-vignette {
+  background-image:
+    linear-gradient(to right, oklch(0.65 0 0 / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.65 0 0 / 0.1) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, black 15%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, black 15%, transparent 80%);
+}
